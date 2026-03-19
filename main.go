@@ -3,12 +3,15 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 	"github.com/YamamoJuan/go-url-shortener/handler"
 	"github.com/YamamoJuan/go-url-shortener/store"
 )
 
 func main() {
 	r := gin.Default()
+	r.Use(cors.Default())
+
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "Welcome to the URL Shortener API!",

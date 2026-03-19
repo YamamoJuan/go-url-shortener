@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>URL Shortener</title>
+
+    <!-- favicon -->
+    <link rel="icon" href="favicon.ico">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+
+        body {
+            background: #c0392b;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: white;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .row button {
+            flex: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>ini mendekin link</h1>
+
+    <p>masukin link</p>
+
+    <input id="urlInput" placeholder="contoh: yamamojuan.vercel.app">
+
+    <button onclick="shorten()">shorten</button>
+
+    <p>link pendeknya</p>
+
+    <input id="result" readonly>
+
+    <div class="row">
+        <button onclick="copyLink()">salin</button>
+        <button onclick="openLink()">langsung buka aja</button>
+    </div>
+
+</div>
+
+
+<script>
+
+let lastShort = ""
+
+async function shorten() {
+
+    const longUrl =
+        document.getElementById("urlInput").value
+
+    const res = await fetch(
+        "http://localhost:9808/create-short-url",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                long_url: longUrl,
+                user_id: "web"
+            })
+        }
+    )
+
+    const data = await res.json()
+
+    lastShort = data.short_url
+
+    document.getElementById("result").value =
+        data.short_url
+}
+
+
+function copyLink() {
+
+    navigator.clipboard.writeText(lastShort)
+
+    alert("udah kesalin!")
+}
+
+
+function openLink() {
+
+    if (lastShort) {
+        window.open(lastShort)
+    }
+
+}
+
+</script>
+
+</body>
+</html>

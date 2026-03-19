@@ -1,10 +1,11 @@
 package handler 
 
 import (
+	"net/http"
+	"strings"
 	"github.com/YamamoJuan/go-url-shortener/shortener"
 	"github.com/YamamoJuan/go-url-shortener/store"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type UrlCreationRequest struct{
@@ -12,17 +13,42 @@ type UrlCreationRequest struct{
 	UserId string `json:"user_id" binding:"required"`
 }
 
+func normalizeUrl(url string) string{
+	if !strings.HasPrefix(url, "http://") &&
+		 !strings.HasPrefix(url, "https://") {
+			
+			url = "https://" + url
+		}
+	return url
+}
+
 func CreateShortUrl(c *gin.Context) {
 	var creationRequest UrlCreationRequest
 	if err := c.ShouldBindJSON(&creationRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
-	shortUrl := shortener.GenerateShortLink(creationRequest.LongUrl, creationRequest.UserId)
-	store.SaveUrlMapping(shortUrl, creationRequest.LongUrl, creationRequest.UserId)
+	longUrl := creationRequest.LongUrl
+
+	longUrl = normalizeUrl(longUrl)
+
+	shortUrl := shortener.GenerateShortLink(
+		longUrl,
+		creationRequest.UserId,
+	)
+
+	store.SaveUrlMapping(
+		shortUrl,
+		longUrl,
+		creationRequest.UserId,
+	)
+
 
 	host := "http://localhost:9808/"
+	
 	c.JSON(200, gin.H{
 		"message": "short url created succesfully",
 		"short_url": host +shortUrl,
