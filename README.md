@@ -2,6 +2,13 @@
 
 simple url shortener cuma pake go, gin, dan redis.
 
+## Requirements
+- Install (Go[https://go.dev/doc/install]) dulu.
+- Download (redis[https://github.com/tporadowski/redis/releases]), extract terus install redis-server.exe
+- Text editor pake apa aja tapi gua pake (vscode[https://code.visualstudio.com/download]) sih
+- udah itu aja
+
+
 ## Features
 
 - Buat short URL
