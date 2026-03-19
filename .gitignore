@@ -1,0 +1,13 @@
+# binaries
+*.exe
+*.out
+*.log
+
+# go
+bin/
+
+# env
+.env
+
+# vscode
+.vscode/
