@@ -2,13 +2,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"os"
+
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+
 	"github.com/YamamoJuan/go-url-shortener/handler"
 	"github.com/YamamoJuan/go-url-shortener/store"
 )
 
 func main() {
+
+	store.InitializeStore()
+
 	r := gin.Default()
 	r.Use(cors.Default())
 
@@ -18,18 +24,23 @@ func main() {
 		})
 	})
 
-	r.POST("/create-short-url", func(c *gin.Context){
+	r.POST("/create-short-url", func(c *gin.Context) {
 		handler.CreateShortUrl(c)
 	})
 
-	r.GET("/:shortUrl", func(c *gin.Context){
+	r.GET("/:shortUrl", func(c *gin.Context) {
 		handler.HandleShortUrlRedirect(c)
 	})
 
-	store.InitializeStore()
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
-	err := r.Run(":9808")
+	fmt.Println("Running on port:", port)
+
+	err := r.Run(":" + port)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to start the web server - Error: %v", err))
+		panic(fmt.Sprintf("Failed to start server: %v", err))
 	}
 }
