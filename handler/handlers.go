@@ -50,12 +50,8 @@ func CreateShortUrl(c *gin.Context) {
 
 	host := os.Getenv("BASE_URL")
 
-	if host == "" {
-		host := os.Getenv("BASE_URL")
-	}
-
 	c.JSON(200, gin.H{
-		"message":   "short url created successfully",
+		"message": "short url created succesfully",
 		"short_url": host + shortUrl,
 	})
 }
