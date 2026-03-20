@@ -18,22 +18,13 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
+	// serve html
 	r.StaticFile("/", "./index.html")
 	r.StaticFile("/favicon.ico", "./favicon.ico")
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Welcome to the URL Shortener API!",
-		})
-	})
+	r.POST("/create-short-url", handler.CreateShortUrl)
 
-	r.POST("/create-short-url", func(c *gin.Context) {
-		handler.CreateShortUrl(c)
-	})
-
-	r.GET("/:shortUrl", func(c *gin.Context) {
-		handler.HandleShortUrlRedirect(c)
-	})
+	r.GET("/:shortUrl", handler.HandleShortUrlRedirect)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -44,6 +35,6 @@ func main() {
 
 	err := r.Run(":" + port)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to start server: %v", err))
+		panic(err)
 	}
 }
