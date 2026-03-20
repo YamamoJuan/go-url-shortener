@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"fmt"
+	"os"
 	"github.com/go-redis/redis/v8"
 	"time"
 )
@@ -20,21 +21,41 @@ type StorageService struct {
 }
 
 
-func InitializeStore() *StorageService{
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:	"localhost:6379",
-		Password: "",
-		DB:		0,
-	})
+func InitializeStore() *StorageService {
+
+	redisURL := os.Getenv("REDIS_URL")
+
+	var redisClient *redis.Client
+
+	if redisURL != "" {
+
+		opt, err := redis.ParseURL(redisURL)
+		if err != nil {
+			panic(fmt.Sprintf("Failed to parse REDIS_URL: %v", err))
+		}
+
+		redisClient = redis.NewClient(opt)
+
+	} else {
+
+		// fallback local
+		redisClient = redis.NewClient(&redis.Options{
+			Addr: "localhost:6379",
+			Password: "",
+			DB: 0,
+		})
+
+	}
 
 	pong, err := redisClient.Ping(ctx).Result()
-	if err != nil{
+	if err != nil {
 		panic(fmt.Sprintf("Error init Redis: %v", err))
 	}
 
-	fmt.Printf("\nRedis started succesfully: pong message = {%s}", pong)
+	fmt.Printf("\nRedis started successfully: pong = %s\n", pong)
+
 	storeService.redisClient = redisClient
-	return storeService	
+	return storeService
 }
 
 func SaveUrlMapping(shortUrl string, originalUrl string, userId string){
